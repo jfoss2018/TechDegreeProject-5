@@ -1,12 +1,11 @@
 let htmlStr1 = '';
 let htmlStr2 = '';
-//let modals;
-//let btnContainer;
 let closeBtn;
 let nextBtn;
 let prevBtn;
 let modalArray = [];
 let indexNum;
+let searchArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const galleryDiv = document.getElementById('gallery');
 let cards;
 const modalDiv = document.createElement('div');
@@ -42,33 +41,7 @@ success: function(data) {
       zip: data.results[i].location.postcode,
       dob: data.results[i].dob.date
     });
-    /*htmlStr2 += `
-      <div class="modal">
-          <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-          <div class="modal-info-container">
-              <img class="modal-img" src="${data.results[i].picture.large}" alt="${data.results[i].name.first} ${data.results[i].name.last} profile picture">
-              <h3 id="name" class="modal-name cap">${data.results[i].name.first} ${data.results[i].name.last}</h3>
-              <p class="modal-text">${data.results[i].email}</p>
-              <p class="modal-text cap">${data.results[i].location.city}</p>
-              <hr>
-              <p class="modal-text">${data.results[i].cell}</p>
-              <p class="modal-text">${data.results[i].location.street}, ${data.results[i].location.city}, ${data.results[i].location.state} ${data.results[i].location.postcode}</p>
-              <p class="modal-text">${data.results[i].dob.date}</p>
-          </div>
-      </div>`;*/
   }
-  /*htmlStr2 += `
-    <div class="modal-btn-container">
-        <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-        <button type="button" id="modal-next" class="modal-next btn">Next</button>
-    </div>`;*/
-  //modalDiv.innerHTML = htmlStr2;
-  //btnContainer = modalDiv.querySelector('.modal-btn-container');
-  //modals = modalDiv.children;
-  //closeBtn = modalDiv.querySelectorAll('')
-  /*for (i = 0; i < modals.length; i += 1) {
-    modals[i].style.display = 'none';
-  }*/
   modalDiv.style.display = 'none';
   galleryDiv.innerHTML = htmlStr1;
   cards = galleryDiv.children;
@@ -78,10 +51,31 @@ success: function(data) {
 const searchBox = `
   <form action="#" method="get">
       <input type="search" id="search-input" class="search-input" placeholder="Search...">
-      <input type="submit" value="&#x1F50D;" id="serach-submit" class="search-submit">
+      <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
   </form>`;
 const $searchContainer = $('.search-container');
 $searchContainer.html(searchBox);
+
+const searchInput = document.getElementById('search-input');
+const searchSubmit = document.getElementById('search-submit');
+
+searchSubmit.addEventListener('click', (e) => {
+  searchArray = [];
+  const searchText = searchInput.value;
+  for (let i = 0; i < modalArray.length; i += 1) {
+    cards[i].style.display = 'none';
+    const firstName = modalArray[i].first;
+    const lastName = modalArray[i].last;
+    if (firstName.includes(searchText) || lastName.includes(searchText)) {
+      cards[i].style.display = 'block';
+      searchArray.push(i);
+    }
+  }
+});
+
+
+
+
 
 
 galleryDiv.addEventListener('click', (e) => {
@@ -92,18 +86,8 @@ galleryDiv.addEventListener('click', (e) => {
   }
 });
 
-/*function showModals (index) {
-  for (let i = 0; i < modals.length; i += 1) {
-    if (i === index) {
-      modals[i].style.display = 'block';
-      modalDiv.style.display = 'block';
-      btnContainer.style.display = 'block';
-    }
-  }
-}*/
-
 function createModal (index) {
-  indexNum = index;
+  indexNum = searchArray.indexOf(index);
   htmlStr2 = `
     <div class="modal">
         <button type="button" id="modal-close-btn" class="modal-close-btn closeBtn"><strong class="closeBtn">X</strong></button>
@@ -119,12 +103,17 @@ function createModal (index) {
         </div>
     </div>
     <div class="modal-btn-container">`
-  if (index === cards.length - 1) {
+  if (0 === searchArray.length - 1) {
+    htmlStr2 += `
+        <button type="button" disabled=true id="modal-prev" class="modal-prev disbtn">Prev</button>
+        <button type="button" disabled=true id="modal-next" class="modal-next disbtn">Next</button>
+      </div>`;
+  } else if (searchArray.indexOf(index) === searchArray.length - 1) {
     htmlStr2 += `
         <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
         <button type="button" disabled=true id="modal-next" class="modal-next disbtn">Next</button>
       </div>`;
-  } else if (index === 0) {
+  } else if (searchArray.indexOf(index) === 0) {
     htmlStr2 += `
         <button type="button" disabled=true id="modal-prev" class="modal-prev disbtn">Prev</button>
         <button type="button" id="modal-next" class="modal-next btn">Next</button>
@@ -137,30 +126,23 @@ function createModal (index) {
   }
   modalDiv.innerHTML = htmlStr2;
   modalDiv.style.display = 'block';
-  //closeBtn = document.getElementById('modal-close-btn');
-  //nextBtn = document.getElementById('modal-next');
-  //prevBtn = document.getElementById('modal-prev');
-
-
-
-  /*closeBtn.addEventListener('click', (e) => {
-    modalDiv.innerHTML = '';
-    modalDiv.style.display = 'none';
-  });
-  nextBtn.addEventListener('click', (e) => {
-    createModal(index + 1);
-  });*/
 }
+
 modalDiv.addEventListener('click', (e) => {
   if (e.target.id === 'modal-next') {
-    createModal(indexNum + 1);
+    createModal(searchArray[indexNum + 1]);
   } else if (e.target.id === 'modal-prev') {
-    createModal(indexNum - 1);
+    createModal(searchArray[indexNum - 1]);
   } else if (e.target.classList.contains('closeBtn')) {
     modalDiv.innerHTML = '';
     modalDiv.style.display = 'none';
   }
 });
+
+
+
+
+
 
 // Create main components to the app and add them dynamically.
 // Use the markup in the index.html file to create components.
