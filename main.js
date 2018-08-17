@@ -1,29 +1,63 @@
-$.ajax({
-  url: 'https://randomuser.me/api/',
-  dataType: 'json',
-  success: function(data) {
-    console.log(data.results[0].gender);
-  }
-});
-/*
-let htmlStr = '';
-for (let i = 0; i < 12; i += 1) {
-  htmlStr += `<div class="card"><div class="card-img-container">`;
+let htmlStr1 = '';
+let htmlStr2 = '';
 
+$.ajax({
+url: 'https://randomuser.me/api/?results=12&nat=us',
+dataType: 'json',
+success: function(data) {
+  for (let i = 0; i < 12; i += 1) {
+    htmlStr1 += `
+      <div class="card">
+        <div class="card-img-container">
+          <img class="card-img" src="${data.results[i].picture.large}" alt="${data.results[i].name.first} ${data.results[i].name.last} profile picture">
+        </div>
+        <div class="card-info-container">
+          <h3 id="name" class="card-name cap">${data.results[i].name.first} ${data.results[i].name.last}</h3>
+          <p class="card-text">${data.results[i].email}</p>
+          <p class="card-text cap">${data.results[i].location.city}, ${data.results[i].location.state}</p>
+        </div>
+      </div>`;
+    htmlStr2 += `
+      <div class="modal">
+          <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+          <div class="modal-info-container">
+              <img class="modal-img" src="${data.results[i].picture.large}" alt="${data.results[i].name.first} ${data.results[i].name.last} profile picture">
+              <h3 id="name" class="modal-name cap">${data.results[i].name.first} ${data.results[i].name.last}</h3>
+              <p class="modal-text">${data.results[i].email}</p>
+              <p class="modal-text cap">${data.results[i].location.city}</p>
+              <hr>
+              <p class="modal-text">${data.results[i].cell}</p>
+              <p class="modal-text">${data.results[i].location.street}, ${data.results[i].location.city}, ${data.results[i].location.state} ${data.results[i].location.postcode}</p>
+              <p class="modal-text">${data.results[i].dob.date}</p>
+          </div>
+      </div>`;
+  }
+  htmlStr2 += `
+    <div class="modal-btn-container">
+        <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+        <button type="button" id="modal-next" class="modal-next btn">Next</button>
+    </div>`;
+  const modalDiv = document.createElement('div');
+  modalDiv.className = 'modal-container';
+  modalDiv.innerHTML = htmlStr2;
+  const galleryDiv = document.getElementById('gallery');
+  galleryDiv.innerHTML = htmlStr1;
+  const $body = $('body');
+  $body.append(modalDiv);
 }
-*/
-/*
-<div class="card">
-    <div class="card-img-container">
-        <img class="card-img" src="https://placehold.it/90x90" alt="profile picture">
-    </div>
-    <div class="card-info-container">
-        <h3 id="name" class="card-name cap">first last</h3>
-        <p class="card-text">email</p>
-        <p class="card-text cap">city, state</p>
-    </div>
-</div>
-*/
+});
+
+const searchBox = `
+  <form action="#" method="get">
+      <input type="search" id="search-input" class="search-input" placeholder="Search...">
+      <input type="submit" value="&#x1F50D;" id="serach-submit" class="search-submit">
+  </form>`;
+const $searchContainer = $('.search-container');
+$searchContainer.html(searchBox);
+
+
+
+
 
 // Create main components to the app and add them dynamically.
 // Use the markup in the index.html file to create components.
